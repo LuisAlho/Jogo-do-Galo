@@ -2,6 +2,13 @@ package gestao;
 
 public class Gestao {
 
-    public static void main(String [] args) {
+    public Gestao(){
+        
+    }
+
+    public boolean start(){
+
+        return true;
+
     }
 }

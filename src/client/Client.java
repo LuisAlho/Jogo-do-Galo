@@ -16,6 +16,7 @@ public class Client extends JFrame {
     private int quemJoga = 0;
     private int pnt1 = 0;
     private int pnt2 = 0;
+
     private JLabel guia;
     private JLabel copyright;
 
@@ -27,7 +28,7 @@ public class Client extends JFrame {
 
     public Client() {
         super();
-        setTitle("Jogo da Velha");
+        setTitle("Jogo do Galo");
         Toolkit tk = Toolkit.getDefaultToolkit();
         Dimension d = tk.getScreenSize();
         Box editBox = Box.createVerticalBox();
