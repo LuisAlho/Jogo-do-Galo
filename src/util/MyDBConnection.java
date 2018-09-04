@@ -6,8 +6,6 @@ import java.util.List;
 
 public class MyDBConnection {
 
-    private final static String urlBD = "127.0.0.1";
-    private final static int  port = 3306;
     private final static  String nameDB = "myDB";
 
     private static MyDBConnection instance;
@@ -16,13 +14,13 @@ public class MyDBConnection {
 
     private Connection connection;
 
-    public MyDBConnection(){
-        connection = connectToDB(urlBD, port, nameDB);
+    public MyDBConnection(String urlBD, int port){
+        connection = connectToDB(urlBD, port, this.nameDB);
     }
 
-    public static MyDBConnection getInstance() {
+    public static MyDBConnection getInstance(String urlBD, int port) {
         if (instance == null){
-            instance = new MyDBConnection();
+            instance = new MyDBConnection(urlBD, port);
         }
         return instance;
     }
