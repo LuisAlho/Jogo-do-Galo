@@ -1,7 +1,10 @@
 package gestao;
 
+
+import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,6 +18,7 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
     private String url;
     
     private MyDBConnection db;
+    private Registry registry;
     
     
     /**
@@ -35,12 +39,21 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
             port = Integer.parseInt(args[1]);
         }
 
-        Gestao gestao = new Gestao(url, port);
-        
-        if(!gestao.start()){
+        Gestao gestao;
+        try {
+            gestao = new Gestao(url, port);
+            
+            if(!gestao.start()){
             System.out.println("Error starting service gestao...");
             System.exit(0);
         }
+            
+        } catch (RemoteException ex) {
+            System.out.println("Error starting service gestao!\nExit service....");
+            Logger.getLogger(Gestao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
     }
 
     /**
@@ -49,7 +62,8 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
      * @param url -> Database address
      * @param port -> Database port
      */
-    public Gestao(String url, int port){
+    public Gestao(String url, int port) throws RemoteException{
+        super();
         this.port = port;
         this.url = url;
     }
@@ -67,13 +81,22 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
             //Create registry
             LocateRegistry.createRegistry(regestryPort);
             
+            //locate registry
+            registry = LocateRegistry.getRegistry("localhost");
+            
             //Start DB connection
             db = MyDBConnection.getInstance(url, port);
+            
+            //Bind remote service to registry
+            registry.bind("Gestao", this);
             
             
             
         } catch (RemoteException ex) {
             ex.printStackTrace();
+            Logger.getLogger(Gestao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } catch (AlreadyBoundException ex) {
             Logger.getLogger(Gestao.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
