@@ -1,8 +1,8 @@
 #Project files
-/nbproject/
-/test/
-manifest.mf
-build.xml
+#/nbproject/
+#/test/
+#manifest.mf
+#build.xml
 
 # Compiled class file
 *.class
