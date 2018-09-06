@@ -1,31 +1,78 @@
 package util.model;
 
+import java.io.Serializable;
+
 
 /**
  * Model to table players on database
  */
 
-public class Player {
+public class Player implements Serializable {
 
-    private String Name;
-    private int Id;
+    private String name;
+    private int id;
+    private String password;
+    private String username;
+    
 
     public Player(){}
 
 
+    
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * @return the username
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * @param username the username to set
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * @return the name
+     */
     public String getName() {
-        return Name;
+        return name;
     }
 
+    /**
+     * @param name the name to set
+     */
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
+    /**
+     * @return the id
+     */
     public int getId() {
-        return Id;
+        return id;
     }
 
+    /**
+     * @param id the id to set
+     */
     public void setId(int id) {
-        Id = id;
+        this.id = id;
     }
 }

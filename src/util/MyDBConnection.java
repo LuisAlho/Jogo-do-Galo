@@ -30,6 +30,12 @@ public class MyDBConnection {
         //TODO create database connection
         return null;
     }
+    
+    public Player searchPlayerLogin(String name, String password){
+        
+        //no player found with that credentials
+        return null;
+    }
 
     private List<Player> listUsers(){
 

@@ -14,6 +14,10 @@ import java.rmi.RemoteException;
  */
 public interface GestaoRemoteInterface extends Remote {
 
-    int add() throws RemoteException;
+    boolean login(String user, String password) throws RemoteException;
+    
+    boolean registerUser(String user, String password, String name) throws RemoteException;
+    
+    String getBDServerIp() throws RemoteException;
     
 }

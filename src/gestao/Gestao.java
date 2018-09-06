@@ -1,10 +1,11 @@
 package gestao;
 
-import java.rmi.AlreadyBoundException;
+import util.model.Player;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +19,12 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
 
     private MyDBConnection db;
     private Registry registry;
+    
+    //Lista de servidores de jogo
+    //so deve de guardar o mais antigo??
+    private List serversList;
 
+    public Registry r;
     /**
      * Function main
      *
@@ -26,17 +32,17 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
      */
     public static void main(String[] args) {
 
-        int port = 1050;
-        String url = "localhost";
+        int port;
+        String url;
 
         if (args.length != 2) {
             System.out.println("Invalid arguments! \nEx: java Gestao 'port'");
             System.exit(0);
-        } else {
-            url = args[0];
-            port = Integer.parseInt(args[1]);
-        }
-
+        } 
+        url = args[0];
+        port = Integer.parseInt(args[1]);
+        
+        //inici o servico de gestao
         Gestao gestao;
         try {
             gestao = new Gestao(url, port);
@@ -72,35 +78,61 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
     public boolean start() {
         System.out.println("Iniciar serividor de gestao...");
 
-        try {
-            //Create registry
-            LocateRegistry.createRegistry(regestryPort);
+        try{
+            //Init registry
+            try{
 
-            //locate registry
-            registry = LocateRegistry.getRegistry("localhost");
+            System.out.println("Tentativa de lancamento do registry no porto " + Registry.REGISTRY_PORT + "...");
+            r = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
+            System.out.println("Registry lancado!");
 
-            //Start DB connection
+            }catch(RemoteException e){
+                System.out.println("Registry provavelmente ja' em execucao!");
+                r = LocateRegistry.getRegistry();
+            
+            }
+            
+            // Cria e lanca o servico,
+            System.out.println("Servico gestao criado e em execucao ("+this.getRef().remoteToString()+"...");
+
+            // Regista o servico para que os clientes possam encontra'-lo, ou seja,
+            // obter a sua referencia remota (endereco IP, porto de escuta, etc.).
+
+            r.bind("RemoteTime", this);     
+            System.out.println("Servico RemoteTime registado no registry...");
+            
+            //get reference to MySQLDataBase
             db = MyDBConnection.getInstance(url, port);
 
-            //Bind remote service to registry
-            registry.bind("Gestao", this);
-
-        } catch (RemoteException ex) {
-            ex.printStackTrace();
-            Logger.getLogger(Gestao.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        } catch (AlreadyBoundException ex) {
-            Logger.getLogger(Gestao.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+            }catch(RemoteException e){
+                System.out.println("Erro remoto - " + e);
+                System.exit(1);
+            }catch(Exception e){
+                System.out.println("Erro - " + e);
+                System.exit(1);
+            }     
 
         return true;
     }
 
     @Override
-    public int add() throws RemoteException {
+    public boolean login(String name, String password) throws RemoteException {
+        
+        Player p = db.searchPlayerLogin(name, password);
 
         throw new UnsupportedOperationException("Not supported yet.");
+        //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getBDServerIp() throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); 
+        //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean registerUser(String user, String password, String name) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); 
         //To change body of generated methods, choose Tools | Templates.
     }
 }
