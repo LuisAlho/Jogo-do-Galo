@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import javax.swing.JPanel;
 import client.logic.Constants;
 import client.logic.ObservableGame;
+import client.logic.states.AwaitBeginning;
 
 /** Grelha de celulas... E' apenas um contentor
  * 
@@ -19,6 +20,8 @@ class GameGrid extends JPanel implements Constants
     {
         game = g;        
         setupLayout();
+        
+        setVisible(game.getState() instanceof AwaitBeginning);
     }
 
 //    void setupLayout()

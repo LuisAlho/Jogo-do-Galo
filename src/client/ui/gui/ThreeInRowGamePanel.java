@@ -15,6 +15,9 @@ public class ThreeInRowGamePanel extends JPanel
     StartOptionPanel optionPanel;
     GameGrid theGrid;
     PlayerData pd1,pd2;
+    
+    LoginPanel loginPanel;
+    RegisterPanel registerPanel;
 
     public ThreeInRowGamePanel(ObservableGame game)
     {
@@ -30,14 +33,25 @@ public class ThreeInRowGamePanel extends JPanel
         theGrid=new GameGrid(game);
         pd1=new PlayerData(game,1);
         pd2=new PlayerData(game,2);
+        
+        loginPanel = new LoginPanel(game);
+        registerPanel = new RegisterPanel(game);
    
     }
 
     private void setupLayout()
     {
-        JPanel pCenter, pSouth;
+        JPanel pCenter, pSouth, pLogin, pRegister;
 
         setLayout(new BorderLayout());
+        
+        pLogin=new JPanel();
+        pLogin.setLayout(new BorderLayout());
+        pLogin.add(loginPanel,BorderLayout.CENTER);
+        
+        pRegister=new JPanel();
+        pRegister.setLayout(new BorderLayout());
+        pRegister.add(registerPanel,BorderLayout.CENTER);
 
         pCenter=new JPanel();
         pCenter.setLayout(new BorderLayout());
@@ -52,6 +66,9 @@ public class ThreeInRowGamePanel extends JPanel
         add(pCenter,BorderLayout.CENTER);
         
         add(optionPanel,BorderLayout.EAST);        
+        
+        add(pRegister, BorderLayout.CENTER);
+        add(pLogin, BorderLayout.CENTER);
         
         validate();
     }

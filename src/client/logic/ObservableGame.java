@@ -3,6 +3,13 @@ package client.logic;
 
 import java.util.Observable;
 import client.logic.states.IStates;
+import gestao.GestaoRemoteInterface;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * @author Jose Marinho
@@ -12,15 +19,77 @@ import client.logic.states.IStates;
 public class ObservableGame extends Observable
 {
     GameModel gameModel;
+    GestaoRemoteInterface gestao;
     
     public ObservableGame()
     {
+        
+        //TODO procurar o servidor de gestao
+        /*
+        try{
+            
+            Registry r;
+            
+            try{
+                
+                r = LocateRegistry.getRegistry();          
+                System.out.println("Registry lancado!");
+                                
+            }catch(RemoteException e){
+                System.out.println("Registry provavelmente ja' em execucao!");
+                
+            }
+            
+            // Cria e lanca o servico,
+            
+            RemoteTimeService timeService = new RemoteTimeService();
+            
+            System.out.println("Servico RemoteTime criado e em execucao ("+timeService.getRef().remoteToString()+"...");
+            
+            // Regista o servico para que os clientes possam encontra'-lo, ou seja,
+            // obter a sua referencia remota (endereco IP, porto de escuta, etc.).
+             
+            r.bind("RemoteTime", timeService);     
+                   
+            System.out.println("Servico RemoteTime registado no registry...");
+            
+        }catch(RemoteException e){
+            System.out.println("Erro remoto - " + e);
+            System.exit(1);
+        }catch(Exception e){
+            System.out.println("Erro - " + e);
+            System.exit(1);
+        }     */  
+        
+        //TODO add ervice gestao
+                    
+            
+        try {
+            String objectUrl = "rmi://localhost/Gestao";
+            gestao = (GestaoRemoteInterface)Naming.lookup(objectUrl);
+                 
+        } catch (NotBoundException ex) {
+            Logger.getLogger(ObservableGame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(ObservableGame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RemoteException ex) {
+            Logger.getLogger(ObservableGame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
         gameModel = new GameModel();
-    }
+    } 
 
     public GameModel getGameModel()
     {
+        //TODO procurar o game model no rmi
+        
         return gameModel;
+    }
+    
+    public GestaoRemoteInterface getServiceGestao()
+    {
+        return gestao;
     }
 
     public void setGameModel(GameModel gameModel)

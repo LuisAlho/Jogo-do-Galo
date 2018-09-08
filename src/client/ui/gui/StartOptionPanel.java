@@ -28,6 +28,7 @@ class StartOptionPanel extends JPanel implements Observer
     JButton start=new JButton("Start");
     PlayerNameBox player1Name;		
     PlayerNameBox player2Name;
+    
 
     StartOptionPanel(ObservableGame g)
     {
@@ -38,7 +39,8 @@ class StartOptionPanel extends JPanel implements Observer
         setupComponents();
         setupLayout();
         
-        setVisible(game.getState() instanceof AwaitBeginning);
+        //setVisible(game.getState() instanceof AwaitBeginning);
+        setVisible(false);
     }
 
 

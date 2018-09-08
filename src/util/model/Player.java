@@ -17,9 +17,7 @@ public class Player implements Serializable {
 
     public Player(){}
 
-
     
-
     /**
      * @return the password
      */

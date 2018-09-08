@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,15 +33,15 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
      */
     public static void main(String[] args) {
 
-        int port;
-        String url;
-
+        int port = 3306;
+        String url = "localhost";
+/*
         if (args.length != 2) {
             System.out.println("Invalid arguments! \nEx: java Gestao 'port'");
             System.exit(0);
-        } 
-        url = args[0];
-        port = Integer.parseInt(args[1]);
+        } */
+        //url = args[0];
+        //port = Integer.parseInt(args[1]);
         
         //inici o servico de gestao
         Gestao gestao;
@@ -118,10 +119,16 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
     @Override
     public boolean login(String name, String password) throws RemoteException {
         
-        Player p = db.searchPlayerLogin(name, password);
-
-        throw new UnsupportedOperationException("Not supported yet.");
-        //To change body of generated methods, choose Tools | Templates.
+        try {
+            Player p = db.searchPlayerLogin(name, password);
+            if (p != null)
+                return true;
+            return false;
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Gestao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 
     @Override
