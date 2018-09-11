@@ -61,7 +61,7 @@ class PlayerNameBox extends JPanel
             @Override
             public void actionPerformed(ActionEvent e) {
                 game.setPlayerName(nr, nameField.getText());
-                game.startGame();
+                game.startGame(nameField.getText());
             }                        
 	});        
         
@@ -80,6 +80,10 @@ class PlayerNameBox extends JPanel
     public String getText()
     {
         return nameField.getText();
+    }
+    
+    public void setText(String name){
+        nameField.setText(name);
     }
     
 }

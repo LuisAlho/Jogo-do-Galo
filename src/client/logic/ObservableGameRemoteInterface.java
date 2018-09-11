@@ -3,17 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package server;
+package client.logic;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  *
- * @author luisalho
+ * @author Alho
  */
-public interface ServerRemoteInterface extends Remote {
+public interface ObservableGameRemoteInterface extends Remote {
     
-    
+    public void setListUsers(List<util.model.Player> player) throws RemoteException;
     
 }

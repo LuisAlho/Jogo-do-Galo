@@ -1,6 +1,11 @@
 package util.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import static server.Constants.*;
+import server.Token;
+
 
 
 /**
@@ -13,9 +18,13 @@ public class Player implements Serializable {
     private int id;
     private String password;
     private String username;
+    private Integer loggedIn;
+    
+    ;
     
 
     public Player(){}
+   
 
     
     /**
@@ -67,10 +76,24 @@ public class Player implements Serializable {
         return id;
     }
 
+    public Integer getLoggedIn() {
+        return loggedIn;
+    }
+
+    public void setLoggedIn(Integer loggedIn) {
+        this.loggedIn = loggedIn;
+    }
+
     /**
      * @param id the id to set
      */
     public void setId(int id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "Player{" + "name=" + name + ", id=" + id + ", password=" + password + ", username=" + username + '}';
+    }
+
 }

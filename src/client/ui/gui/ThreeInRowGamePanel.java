@@ -15,43 +15,39 @@ public class ThreeInRowGamePanel extends JPanel
     StartOptionPanel optionPanel;
     GameGrid theGrid;
     PlayerData pd1,pd2;
+    ChatPanel panelChat;
     
-    LoginPanel loginPanel;
-    RegisterPanel registerPanel;
+    String username;
+    
 
-    public ThreeInRowGamePanel(ObservableGame game)
+    public ThreeInRowGamePanel(ObservableGame game, String username )
     {
         this.game=game;
-                
+        this.username = username;
         setupComponents();
         setupLayout();
     }
 
     private void setupComponents()
     {
-        optionPanel=new StartOptionPanel(game);
+        
+        optionPanel=new StartOptionPanel(game, username);
         theGrid=new GameGrid(game);
         pd1=new PlayerData(game,1);
         pd2=new PlayerData(game,2);
-        
-        loginPanel = new LoginPanel(game);
-        registerPanel = new RegisterPanel(game);
+        panelChat = new ChatPanel();
    
     }
 
     private void setupLayout()
     {
-        JPanel pCenter, pSouth, pLogin, pRegister;
+        JPanel pCenter, pSouth;
 
         setLayout(new BorderLayout());
         
-        pLogin=new JPanel();
-        pLogin.setLayout(new BorderLayout());
-        pLogin.add(loginPanel,BorderLayout.CENTER);
-        
-        pRegister=new JPanel();
-        pRegister.setLayout(new BorderLayout());
-        pRegister.add(registerPanel,BorderLayout.CENTER);
+        //pChat = new JPanel();
+        //pChat.setLayout(new BorderLayout());
+        //pChat.add(panelChat, BorderLayout.EAST);
 
         pCenter=new JPanel();
         pCenter.setLayout(new BorderLayout());
@@ -64,13 +60,11 @@ public class ThreeInRowGamePanel extends JPanel
  
                        
         add(pCenter,BorderLayout.CENTER);
-        
-        add(optionPanel,BorderLayout.EAST);        
-        
-        add(pRegister, BorderLayout.CENTER);
-        add(pLogin, BorderLayout.CENTER);
+        add(optionPanel,BorderLayout.EAST);
+        add(panelChat,BorderLayout.SOUTH);
         
         validate();
+        
     }
     
 }

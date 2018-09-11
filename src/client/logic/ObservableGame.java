@@ -3,13 +3,23 @@ package client.logic;
 
 import java.util.Observable;
 import client.logic.states.IStates;
+import gestao.Gestao;
 import gestao.GestaoRemoteInterface;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import util.Message;
 
 /** 
  * @author Jose Marinho
@@ -18,52 +28,20 @@ import java.util.logging.Logger;
 
 public class ObservableGame extends Observable
 {
+    String ip;
     GameModel gameModel;
     GestaoRemoteInterface gestao;
+    ObservableGameRemote remote;
+    Socket socket;
+    String username;
     
-    public ObservableGame()
+    
+    
+    public ObservableGame(String ip)
     {
-        
-        //TODO procurar o servidor de gestao
-        /*
-        try{
-            
-            Registry r;
-            
-            try{
-                
-                r = LocateRegistry.getRegistry();          
-                System.out.println("Registry lancado!");
-                                
-            }catch(RemoteException e){
-                System.out.println("Registry provavelmente ja' em execucao!");
-                
-            }
-            
-            // Cria e lanca o servico,
-            
-            RemoteTimeService timeService = new RemoteTimeService();
-            
-            System.out.println("Servico RemoteTime criado e em execucao ("+timeService.getRef().remoteToString()+"...");
-            
-            // Regista o servico para que os clientes possam encontra'-lo, ou seja,
-            // obter a sua referencia remota (endereco IP, porto de escuta, etc.).
-             
-            r.bind("RemoteTime", timeService);     
-                   
-            System.out.println("Servico RemoteTime registado no registry...");
-            
-        }catch(RemoteException e){
-            System.out.println("Erro remoto - " + e);
-            System.exit(1);
-        }catch(Exception e){
-            System.out.println("Erro - " + e);
-            System.exit(1);
-        }     */  
-        
-        //TODO add ervice gestao
-                    
-            
+        this.ip = ip;
+        // add service gestao
+
         try {
             String objectUrl = "rmi://localhost/Gestao";
             gestao = (GestaoRemoteInterface)Naming.lookup(objectUrl);
@@ -76,15 +54,69 @@ public class ObservableGame extends Observable
             Logger.getLogger(ObservableGame.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        //TODO connect to server
+ 
+        //startConnectionToServer();
+
         
         gameModel = new GameModel();
-    } 
+    }
 
     public GameModel getGameModel()
     {
         //TODO procurar o game model no rmi
         
         return gameModel;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
+    public void startConnectionToServer(){
+    
+        Message msg;
+        try {
+            socket = new Socket(ip, 4555);
+            //socket.setSoTimeout(2000);
+
+            msg = new Message();
+            msg.setText("Ola");
+            msg.setType("INIT");
+            msg.setUsername(username);
+
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+
+            out.writeObject(msg);
+            out.flush();
+
+        } catch (IOException ex) {
+            Logger.getLogger(ObservableGame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void startRemoteObject(String username){
+        try {
+            remote = new ObservableGameRemote(this);
+            //remote.startRemoteService(username);
+            
+            System.out.println("Start Remote Object: " + ((ObservableGameRemoteInterface)remote));
+            gestao.getRemoteObject((ObservableGameRemoteInterface)remote, username);
+            System.out.println("End Remote Object");
+                        
+        } catch (RemoteException ex) {
+            System.out.println("Error get observable remote object: " + ex);
+        }
+    }
+    
+    public void getUsersList(List<util.model.Player> p){
+        
+        setChanged();
+        notifyObservers(p);
     }
     
     public GestaoRemoteInterface getServiceGestao()
@@ -101,7 +133,21 @@ public class ObservableGame extends Observable
     }   
     
     public GameData getGameData() {
-        return gameModel.getGameData();
+        
+        System.out.println("GET GAMEDATA OBSERVABLE");
+        GameData msg;
+        try {
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            msg = (GameData)in.readObject();
+            
+            return msg;
+            
+        } catch (IOException ex) {
+            Logger.getLogger(ObservableGame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ObservableGame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     public IStates getState()
@@ -189,12 +235,57 @@ public class ObservableGame extends Observable
         notifyObservers();
     }
 
-    public void startGame()
+    public void startGame(String player)
     {
-        gameModel.startGame();
+   
+        Message msg;
+       
+        try {
+            System.out.println("Socket Open: " + socket.isConnected());
+            
+            msg = new Message();
+            msg.setText("Ola");
+            msg.setType("INVITE");
+            msg.setUsername(username);
+            msg.setPlayer(player);                    
+            
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            
+            out.writeObject(msg);
+            out.flush();
+            
+            
+            System.out.println("Waiting Response: ");
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            msg = (Message)in.readObject();
+            System.out.println("Message response: " + msg.getType());
+            JOptionPane.showMessageDialog(null, "Received Invite " + msg.getUsername());
+            
+            
+            msg = new Message();
+            msg.setText("Ola");
+            msg.setType("ACCEPTED");
+            msg.setUsername(username);
+            msg.setPlayer(player);
+            
+            out = new ObjectOutputStream(socket.getOutputStream());
+            
+            out.writeObject(msg);
+            out.flush();
+            
+            
+            
+        } catch (IOException ex) {
+            Logger.getLogger(ObservableGame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ObservableGame.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
-        setChanged();
-        notifyObservers();
+        //gameModel.startGame();
+
+        //setChanged();
+        //notifyObservers();
+        
     }
 
     public void placeToken(int line, int column)
@@ -219,6 +310,10 @@ public class ObservableGame extends Observable
         
         setChanged();
         notifyObservers();
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
 

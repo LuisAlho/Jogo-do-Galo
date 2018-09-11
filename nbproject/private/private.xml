@@ -3,8 +3,30 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/ui/gui/GameGrid.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/ui/gui/LoginPanel.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/ui/gui/Resources.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/ui/gui/StartOptionPanel.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/logic/Token.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/ui/gui/ThreeInRowGamePanel.java</file>
             <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/gestao/Gestao.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/files/FileUtility.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/logic/GameModel.java</file>
             <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/gestao/GestaoRemoteInterface.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/ui/gui/PlayerData.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/logic/Constants.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/util/model/Player.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/logic/ObservableGame.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/MainWithGui.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/logic/states/IStates.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/util/MyDBConnection.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/logic/states/StateAdapter.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/logic/GameData.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/ui/gui/RegisterPanel.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/ui/gui/PlayerNameBox.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/logic/Player.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/logic/states/AwaitBeginning.java</file>
+            <file>file:/C:/Users/Nasyx/Documents/Code/JogoDoGalo/src/client/ui/gui/ThreeInRowView.java</file>
         </group>
     </open-files>
 </project-private>

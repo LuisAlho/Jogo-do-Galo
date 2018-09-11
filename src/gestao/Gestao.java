@@ -1,12 +1,20 @@
 package gestao;
 
+
+import client.logic.ObservableGameRemote;
+import client.logic.ObservableGameRemoteInterface;
+import java.rmi.Remote;
 import util.model.Player;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RemoteObject;
+import java.rmi.server.RemoteRef;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,11 +27,12 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
     private String url;
 
     private MyDBConnection db;
-    private Registry registry;
+    
+    Map<String, ObservableGameRemoteInterface> mapUsersRemoteObject = new HashMap();
     
     //Lista de servidores de jogo
     //so deve de guardar o mais antigo??
-    private List serversList;
+    //private List serversList;
 
     public Registry r;
     /**
@@ -64,6 +73,7 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
      *
      * @param url -> Database address
      * @param port -> Database port
+     * @throws java.rmi.RemoteException
      */
     public Gestao(String url, int port) throws RemoteException {
         super();
@@ -99,7 +109,7 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
             // Regista o servico para que os clientes possam encontra'-lo, ou seja,
             // obter a sua referencia remota (endereco IP, porto de escuta, etc.).
 
-            r.bind("RemoteTime", this);     
+            r.bind("Gestao", this);     
             System.out.println("Servico RemoteTime registado no registry...");
             
             //get reference to MySQLDataBase
@@ -116,13 +126,34 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
         return true;
     }
 
+    private void notifyLoggedUsers(List<Player> players){
+        
+        System.out.println("List to send: " + players.toString());
+    
+        if(!this.mapUsersRemoteObject.isEmpty()){
+            
+            mapUsersRemoteObject.entrySet().forEach((entry) -> {
+                try {
+                    System.out.println(entry.getKey() + "/" + entry.getValue());
+                    
+                    entry.getValue().setListUsers(players);
+                } catch (RemoteException ex) {
+                    System.out.println("Remote Exception: " + ex);
+                }
+            });
+        }
+        
+    }
+    
     @Override
-    public boolean login(String name, String password) throws RemoteException {
+    public boolean login(String username, String password) throws RemoteException {
         
         try {
-            Player p = db.searchPlayerLogin(name, password);
-            if (p != null)
+            Player p = db.playerLogin(username, password);
+            System.out.println("Player login: " + p);
+            if (p != null){
                 return true;
+            }
             return false;
             
         } catch (SQLException ex) {
@@ -130,7 +161,15 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
             return false;
         }
     }
+    
+    @Override
+    public boolean logoutUser(String username) throws RemoteException {
+        
+        this.mapUsersRemoteObject.remove(username);
+        return db.playerLogout(username);
 
+    }
+    
     @Override
     public String getBDServerIp() throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); 
@@ -139,7 +178,36 @@ public class Gestao extends UnicastRemoteObject implements GestaoRemoteInterface
 
     @Override
     public boolean registerUser(String user, String password, String name) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); 
-        //To change body of generated methods, choose Tools | Templates.
+        
+        try {
+            System.out.println("Register user");
+            
+            db.registerPlayer(user, password, name);
+            return true;
+            
+        } catch (SQLException ex) {
+            System.out.println("Error inserting on DB..." + ex);
+        }
+        return false;
     }
+
+    @Override
+    public void getLoggedInPlayers() throws RemoteException {
+        
+        this.notifyLoggedUsers(db.listUsers(true));
+    }
+
+    @Override
+    public void getRemoteObject(ObservableGameRemoteInterface remoteObject, String username) throws RemoteException {
+
+        try{   
+            this.mapUsersRemoteObject.put(username, remoteObject);
+        }catch(Exception ex){
+            System.out.println("Error casting remote object: " + ex);
+        } 
+    }
+
+   
+    
+    
 }

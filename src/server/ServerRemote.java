@@ -5,15 +5,18 @@
  */
 package server;
 
-import java.rmi.Remote;
+
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 /**
  *
- * @author luisalho
+ * @author Nasyx
  */
-public interface ServerRemoteInterface extends Remote {
-    
-    
+public class ServerRemote extends UnicastRemoteObject implements ServerRemoteInterface {
+
+    public ServerRemote() throws RemoteException{
+        super();
+    }
     
 }

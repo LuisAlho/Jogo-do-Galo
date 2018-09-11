@@ -4,10 +4,12 @@ import util.model.Player;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -67,39 +69,123 @@ public class MyDBConnection implements java.sql.Driver{
 
     }
     
-    public Player searchPlayerLogin(String name, String password) throws SQLException {
+    public Player playerLogin(String username, String password) throws SQLException {
         
         Player p =  new Player();
         
-        String selectTableSQL = "SELECT name, username from player";
+        String selectTableSQL = "SELECT idplayer, password, name, username FROM player WHERE (password like '" + password + "') AND (username like '" + username + "')";
+        System.out.println(selectTableSQL);
         Statement statement = connection.createStatement();
         ResultSet rs = statement.executeQuery(selectTableSQL);
-        if(rs.getRow() == 0) return null;
+        if (!rs.isBeforeFirst() ) { 
+            System.out.println("No data"); 
+            return null;
+        }
+        
         while (rs.next()) {
             p.setName(rs.getString("name"));
             p.setUsername(rs.getString("username"));
         }
-        return p;
+        
+        if(this.setUserLoggedIn(username)){
+            System.out.println("Login: " + p.toString());
+            p.setLoggedIn(1);
+            return p;
+        }
+        return null;
     }
     
-    public boolean resgisterPlayer(String username, String password, String name) throws SQLException {
+    public boolean playerLogout(String username){
+        
+        try {
+            String sql = "UPDATE player SET loggedIn = 0 WHERE username like '" + username + "'";
+            
+            Statement statement = connection.createStatement();
+            int rs = statement.executeUpdate(sql);
+            if(rs == 0) 
+                return false;
+            return true;
+        } catch (SQLException ex) {
+            System.out.println("error updating table player.. :" + ex);
+            return false;
+        }
+    }
+    
+    public boolean registerPlayer(String username, String password, String name) throws SQLException {
         
         //TODO insert player on database
-        String selectTableSQL = "SELECT USER_ID, USERNAME from DBUSER";
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery(selectTableSQL);
-        if(rs.getRow() == 0) 
+        String selectTableSQL = "INSERT INTO player(name, username, password) VALUES (?,?,?,?)" ;
+
+        PreparedStatement pst = connection.prepareCall(selectTableSQL);
+        pst.setString(1, name);
+        pst.setString(2, username);
+        pst.setString(3, password);
+        pst.setInt(4, 1);
+
+        int rs = pst.executeUpdate();
+        if(rs == 0) 
             return false;
         return true;
     }
+    
+    private boolean setUserLoggedIn(String username){
+        
+        try {
+            String sql = "UPDATE player SET loggedIn = 1 WHERE username like '" + username + "'";
+            
+            Statement statement = connection.createStatement();
+            int rs = statement.executeUpdate(sql);
+            if(rs == 0) 
+                return false;
+            return true;
+        } catch (SQLException ex) {
+            System.out.println("error updating table player.. :" + ex);
+            return false;
+        }
+    }
 
-    private List<Player> listUsers(){
+    public List<Player> listUsers(boolean loggedIn){
+        
+        
+        List listUser = new ArrayList<Player>();
+        Player p = new Player();
 
+        if(loggedIn){
+            try {
+                //get all users loggedIn
+                String sql = "SELECT idplayer, name, username, loggedIn FROM player WHERE loggedIn = 1";
+                //String sql = "SELECT * FROM player";
+                Statement statement = connection.createStatement();
+                ResultSet rs = statement.executeQuery(sql);
+                System.out.println("RS List logged users: " + rs);                
+                if (!rs.isBeforeFirst() ) { 
+                    System.out.println("No data"); 
+                    return null;
+                }
+                
+                while (rs.next()) {
+                    p.setName(rs.getString("name"));
+                    p.setUsername(rs.getString("username"));
+                    p.setLoggedIn(rs.getInt("loggedIn"));
+                    System.out.println("RS Player: " + p.toString());
+                    listUser.add(p);
+                    p = new Player();
+                }                
+                return listUser;
+            } catch (SQLException ex) {
+                Logger.getLogger(MyDBConnection.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            
+        }else{
+            //TODO get list of all users
+        }
+        
         //TODO create query to list all users on DB
         return null;
     }
 
-    private List<Player> getUser(int id){
+    private Player getUser(int id){
 
         //TODO create query to get informatuion of one user
         return null;
